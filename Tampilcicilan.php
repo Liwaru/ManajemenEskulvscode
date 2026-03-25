@@ -9,22 +9,18 @@ SELECT
     b.tanggal_cicilan,
     b.cicilanke,
     b.jumlah_cicilan,
-    b.sisacicilke,
     b.sisa_cicilan
 FROM kredit k
 JOIN pembeli p ON k.ktp = p.ktp
-LEFT JOIN (
-    SELECT x.*
-    FROM bayar_cicilan x
-    JOIN (
-        SELECT kode_kredit, MAX(cicilanke) AS max_ke
-        FROM bayar_cicilan
-        GROUP BY kode_kredit
-    ) y ON x.kode_kredit = y.kode_kredit AND x.cicilanke = y.max_ke
-) b ON b.kode_kredit = k.kode_kredit
+LEFT JOIN bayar_cicilan b 
+ON b.kode_kredit = k.kode_kredit
+AND b.cicilanke = (
+    SELECT MAX(cicilanke) 
+    FROM bayar_cicilan 
+    WHERE kode_kredit = k.kode_kredit
+)
 ORDER BY k.kode_kredit ASC
 ";
-
 $result = $conn->query($sql);
 
 $data = [];
