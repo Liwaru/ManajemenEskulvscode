@@ -2,7 +2,7 @@
     $host="localhost";
     $user="root";
     $pass="";
-    $db="penjualanmobil";
+    $db="manajemeneskul";
      
     $conn= new mysqli($host,$user,$pass,$db);
 
