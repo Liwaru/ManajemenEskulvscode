@@ -1,13 +1,22 @@
 <?php
 include 'koneksi.php';
 
-$id_user = $_POST['id_user'];
-$id_eskul = $_POST['id_eskul'];
+$id_user = isset($_POST['id_user']) ? $_POST['id_user'] : '';
+$id_eskul = isset($_POST['id_eskul']) ? $_POST['id_eskul'] : '';
 $tanggal = date("Y-m-d H:i:s");
 
-// 🔥 CEK SUDAH DAFTAR ATAU BELUM
+// VALIDASI
+if ($id_user == '' || $id_eskul == '') {
+    echo json_encode([
+        "success" => false,
+        "message" => "Data tidak lengkap"
+    ]);
+    exit();
+}
+
+// 🔥 CEK SUDAH DAFTAR
 $cek = $conn->query("SELECT * FROM pendaftaran 
-    WHERE id_user='$id_user' AND id_siswa='$id_eskul'");
+    WHERE id_user='$id_user' AND id_eskul='$id_eskul'");
 
 if ($cek->num_rows > 0) {
     echo json_encode([
@@ -18,7 +27,7 @@ if ($cek->num_rows > 0) {
 }
 
 // INSERT
-$sql = "INSERT INTO pendaftaran (id_user, id_siswa, status, tanggal_daftar)
+$sql = "INSERT INTO pendaftaran (id_user, id_eskul, status, tanggal_daftar)
         VALUES ('$id_user', '$id_eskul', 'proses', '$tanggal')";
 
 if ($conn->query($sql) === TRUE) {
