@@ -1,4 +1,6 @@
 <?php
+header("Content-Type: application/json");
+error_reporting(0);
 include 'koneksi.php';
 
 $id_user = isset($_POST['id_user']) ? $_POST['id_user'] : '';

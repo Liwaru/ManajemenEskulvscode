@@ -1,8 +1,14 @@
 <?php
+header("Content-Type: application/json");
+error_reporting(0);
 include 'koneksi.php';
 
-$id_user = $_POST['id_user'];
+$id_user = isset($_POST['id_user']) ? $_POST['id_user'] : '';
 
+if ($id_user == '') {
+    echo json_encode([]);
+    exit();
+}
 $query = "
 SELECT eskul.id_eskul, eskul.nama_eskul, eskul.nama_pembina, eskul.gambar
 FROM pendaftaran

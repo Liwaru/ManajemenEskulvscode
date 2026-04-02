@@ -1,25 +1,37 @@
 <?php
-include 'Koneksi.php';
+header("Content-Type: application/json");
+error_reporting(0);
 
-$nama = $_POST['nama'];
-$password = $_POST['password'];
+include 'koneksi.php';
 
-$sql = "SELECT * FROM users WHERE nama='$nama' AND password='$password'";
-$result = mysqli_query($conn, $sql);
+$nama = $_POST['nama'] ?? '';
+$password = $_POST['password'] ?? '';
 
-$response = array();
-
-if (mysqli_num_rows($result) > 0) {
-    $row = mysqli_fetch_assoc($result);
-    $response['success'] = true;
-    $response['level'] = $row['level'];
-    $response['id_user'] = $row['id_user']; // 🔥 TAMBAHAN
-    $response['message'] = "Login berhasil";
-
-} else {
-    $response['success'] = false;
-    $response['message'] = "Username atau password salah";
+if ($nama == '' || $password == '') {
+    echo json_encode([
+        "success" => false,
+        "message" => "Data kosong"
+    ]);
+    exit();
 }
 
-echo json_encode($response);
+$stmt = $koneksi->prepare("SELECT * FROM users WHERE nama=? AND password=?");
+$stmt->bind_param("ss", $nama, $password);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result && $result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    echo json_encode([
+        "success" => true,
+        "level" => $row['level'],
+        "id_user" => $row['id_user'],
+        "message" => "Login berhasil"
+    ]);
+} else {
+    echo json_encode([
+        "success" => false,
+        "message" => "Username atau password salah"
+    ]);
+}
 ?>
