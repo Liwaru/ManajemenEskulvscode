@@ -1,0 +1,48 @@
+<?php
+header("Content-Type: application/json");
+error_reporting(0);
+include 'koneksi.php';
+
+$id_user = isset($_POST['id_user']) ? $_POST['id_user'] : '';
+$id_eskul = isset($_POST['id_eskul']) ? $_POST['id_eskul'] : '';
+$tanggal = date("Y-m-d H:i:s");
+
+// VALIDASI
+if ($id_user == '' || $id_eskul == '') {
+    echo json_encode([
+        "success" => false,
+        "message" => "Data tidak lengkap"
+    ]);
+    exit();
+}
+
+// 🔥 CEK SUDAH DAFTAR
+$cek = $conn->query("SELECT * FROM pendaftaran 
+    WHERE id_user='$id_user' AND id_eskul='$id_eskul'");
+
+if ($cek->num_rows > 0) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Sudah daftar eskul ini"
+    ]);
+    exit();
+}
+
+// INSERT
+$sql = "INSERT INTO pendaftaran (id_user, id_eskul, status, tanggal_daftar)
+        VALUES ('$id_user', '$id_eskul', 'proses', '$tanggal')";
+
+if ($conn->query($sql) === TRUE) {
+    echo json_encode([
+        "success" => true,
+        "message" => "Berhasil daftar eskul"
+    ]);
+} else {
+    echo json_encode([
+        "success" => false,
+        "message" => "Gagal daftar"
+    ]);
+}
+
+$conn->close();
+?>
