@@ -1,14 +1,24 @@
 <?php
+header("Content-Type: application/json");
 include 'Koneksi.php';
 
-$id_eskul = $_POST['id_eskul'];
+$id_eskul = $_POST['id_eskul'] ?? '';
 
-$sql = "SELECT user.username, daftar_eskul.status, daftar_eskul.id_daftar
-        FROM daftar_eskul
-        JOIN user ON user.id_user = daftar_eskul.id_user
-        WHERE daftar_eskul.id_eskul='$id_eskul' AND status='pending'";
+if ($id_eskul === '') {
+    echo json_encode([]);
+    exit();
+}
 
-$result = mysqli_query($conn, $sql);
+$stmt = $conn->prepare("
+    SELECT users.nama, pendaftaran.status, pendaftaran.id_pendaftaran, pendaftaran.tanggal_daftar
+    FROM pendaftaran
+    JOIN users ON users.id_user = pendaftaran.id_user
+    WHERE pendaftaran.id_eskul = ? AND pendaftaran.status = 'proses'
+    ORDER BY pendaftaran.tanggal_daftar DESC
+");
+$stmt->bind_param("i", $id_eskul);
+$stmt->execute();
+$result = $stmt->get_result();
 
 $data = [];
 
@@ -17,4 +27,6 @@ while ($row = mysqli_fetch_assoc($result)) {
 }
 
 echo json_encode($data);
+$stmt->close();
+$conn->close();
 ?>
