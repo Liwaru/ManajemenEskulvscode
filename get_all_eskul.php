@@ -1,21 +1,19 @@
 <?php
 header('Content-Type: application/json');
 error_reporting(0);
+include 'koneksi.php';
 
-$host = 'localhost';
-$user = 'root';
-$pass = '';
-$db   = 'manajemeneskul';
+$query = "SELECT id_eskul, id_pembina, nama_eskul, nama_pembina, jam_mulai, jam_selesai, gambar FROM eskul";
+$result = mysqli_query($conn, $query);
 
-$conn = mysqli_connect($host, $user, $pass, $db);
-if (!$conn) {
-    echo json_encode(['error' => 'Koneksi gagal']);
+if (!$result) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Gagal mengambil data eskul'
+    ]);
+    $conn->close();
     exit;
 }
-
-// Kolom jam di database bernama `jam mulai` (memakai spasi).
-$query = "SELECT id_eskul, id_pembina, nama_eskul, nama_pembina, `jam mulai` AS jam_mulai, jam_selesai, gambar FROM eskul";
-$result = mysqli_query($conn, $query);
 
 $data = [];
 while ($row = mysqli_fetch_assoc($result)) {
@@ -23,5 +21,5 @@ while ($row = mysqli_fetch_assoc($result)) {
 }
 
 echo json_encode($data);
-mysqli_close($conn);
+$conn->close();
 ?>

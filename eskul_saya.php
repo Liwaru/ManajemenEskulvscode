@@ -10,7 +10,7 @@ if ($id_user == '') {
     exit();
 }
 $query = "
-SELECT eskul.id_eskul, eskul.nama_eskul, eskul.nama_pembina, eskul.gambar
+SELECT eskul.id_eskul, eskul.nama_eskul, eskul.nama_pembina, eskul.jam_mulai, eskul.jam_selesai, eskul.gambar
 FROM pendaftaran
 JOIN eskul ON eskul.id_eskul = pendaftaran.id_eskul
 WHERE pendaftaran.id_user = '$id_user'
